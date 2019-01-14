@@ -1,0 +1,8 @@
+parrot_pytest:
+    image: python:3.7
+    script:
+        - export FLASK_APP=parrot._cli_app
+        - export FLASK_ENV=development
+        - pip install -r requirements/dev.txt
+        - flask --version
+        - pytest --cov-report term-missing --cov=parrot tests/

@@ -1,0 +1,35 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<article>
+    <p>Parrot allows you to mimc a RESTful web service API by configuring it to return prepared responses in the expected format by your client (mobile app, web app, etc.) that will be consuming that API.</p>
+    <p>The mimicked API could be something you will eventually create or something that you have no control over and would like to have an instance to point your client toward so the development of the client can proceed.</p>
+    <p>Parrot is offered as a <em>free</em> service and you are welcome to use it, on a honor based system, that you do not abuse it.</p>
+        
+    <p>Check out the <a href="{{url_for('bp_web.about')}}">about</a> page if you would like a brief backstory for this service.</p>
+    
+    <h2>Supported Features</h2>
+
+    <ul class="features">
+        <li><input type="checkbox" checked="checked" disabled="disabled"> Easy configuration</li>
+        <li><input type="checkbox" checked="checked" disabled="disabled"> Dynamic responses</li>
+            <ul>
+                <li><input type="checkbox" checked="checked" disabled="disabled"> Responses can use request data (e.g. to simulate different login scenarios based on username):</li>
+                    <ul>
+                        <li><input type="checkbox" checked="checked" disabled="disabled"> Request path</li>
+                        <li><input type="checkbox" checked="checked" disabled="disabled"> GET/POST parameters</li>
+                    </ul>
+                <li><input type="checkbox" checked="checked" disabled="disabled"> Respond with different status code for specific requests</li>
+            </ul>
+        <li><input type="checkbox" checked="checked" disabled="disabled"> HTTP Methods support includes GET, POST, PUT, DELETE, PATCH, TRACE, HEAD, and OPTIONS</li>
+        <li><input type="checkbox" checked="checked" disabled="disabled"> Cross Origin Resource Sharing (CORS)</li>
+        <li><input type="checkbox" checked="checked" disabled="disabled"> Delayed responses at service and endpoint level</li>
+    </ul>
+
+    <h2>Coming Soonish!</h2>
+    <ul class="features">
+        <li><input type="checkbox" disabled="disabled"> Random data generators.</li>
+        <li><input type="checkbox" disabled="disabled"> Required parameter validation.</li>
+    </ul>
+</article>
+{% endblock%}

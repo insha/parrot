@@ -1,0 +1,38 @@
+{
+    "title": "The Third Man",
+    "release_date": "1949-10-12",
+    "cast": {
+        "characters": [
+            {
+                "Holly Martins": "Joseph Cotten",
+                "Anna Schmidt": "Alida Valli",
+                "Harry Lime": "Orson Welles",
+                "Maj. Calloway": "Trevor Howard",
+                "Sgt. Paine": "Bernard Lee"
+            }
+        ],
+        "directors": ["Carol Reed"],
+        "writers": {
+            "screenplay": ["Graham Greene"],
+            "story": ["Graham Greene"]
+        },
+        "music": ["Anton Karas"],
+        "Cinematography": "Robert Krasker",
+        "editors": ["Oswald Hafenrichter"],
+        "art": [
+            "Joseph Bato",
+            "Ferdinand Bellan",
+            "John Hawkesworth",
+            "Vincent Korda",
+            "James Sawyer",
+            "George Durant",
+            "Sid Leggett",
+            "Peter Mullins",
+            "Bobby Murrell"
+        ]
+    },
+    "mpaa_rating": "NR",
+    "running_time": 93,
+    "genre": ["Film-Noir", "Mystery", "Thriller"],
+    "synopsis": "Pulp novelist Holly Martins travels to shadowy, postwar Vienna, only to find himself investigating the mysterious death of an old friend, Harry Lime."
+}

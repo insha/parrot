@@ -1,0 +1,45 @@
+<!doctype html>
+<html class="no-js">
+<head>
+	<meta charset="utf-8">
+	<title>{{ g.app_info.name }}</title>
+	<meta name="description" content="{{ g.app_info.tag_line }}" />
+	<meta name="author" content="Farhan Ahmed" />
+	<meta name="copyright" content="{{ g.app_info.copyright }}" />
+	<meta name="keywords" content="">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <link rel="manifest" href="site.webmanifest">
+	<link rel="shortcut icon" href="{{ url_for('static', filename='images/favicon.ico') }}">
+	<link rel="apple-touch-icon" href="{{ url_for('static', filename='images/apple-touch-icon.png')}}">
+    <link rel="stylesheet" href="https://use.typekit.net/btz3sbe.css">
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/normalize.css') }}">
+	<link rel="stylesheet" href="{{ url_for('static', filename='css/main.css') }}">
+</head>
+<body lang="en">
+    <section>
+        <header class="grid-top-bar">
+            <div class="logo">
+                <h1 class="title"><a href="/">{{ g.app_info.name }}</a></h1>
+                <p class="tagline">{{ g.app_info.tag_line }}</p>
+            </div>
+            <nav class="top-bar-nav">
+                <ul>
+                    <li><a href="{{ url_for('bp_web.docs_manage') }}">Quick Start</a></li>
+                    <li><a href="{{ url_for('bp_web.about') }}">About</a></li>
+                    <li><a href="{{ url_for('bp_web.privacy') }}">Privacy</a></li>
+                </ul>
+            </nav>
+        </header>
+    </section>
+    {% block content %}{% endblock %}
+    <footer class="grid-footer">
+        <p class="legal">
+            <a href="{{ url_for('bp_web.contact') }}">Contact</a>&nbsp;&nbsp;
+            <a href="{{ url_for('bp_web.privacy') }}">Privacy</a>&nbsp;&nbsp;
+            <a href="{{ url_for('bp_web.terms') }}">Terms of Service</a>
+        </p>
+        <p class="app-info">{{g.app_info.name}} v{{g.app_info.version}} ({{g.app_info.build}})</p>
+        <p class="copyright">{{ g.app_info.copyright }}</p>
+    </footer>
+</body>
+</html>

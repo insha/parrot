@@ -1,0 +1,25 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<article>
+    <h1>{{service.name}}</h1>
+    <p>{{service.description}}</p>
+    <h3>Available Resources</h3>
+    <ul class="available-resources">
+    {% for url, endpoint in service.endpoints.items() %}
+        {% for method, response in endpoint.responses.items() %}
+        <li>
+            <span class="http-method">{{method|upper}}</span>&nbsp;
+            <a href="#">/{{endpoint.url}}</a>&nbsp;
+            {% if response.fuzz %}
+            <span class="endpoint-fuzz">fuzz</span>
+            {% endif %}
+            {% if response.lag > default_lag %}
+            <span class="endpoint-lag">lag {{response.lag}}</span>
+            {% endif %}
+        </li>
+        {% endfor %}
+    {% endfor %}
+    </ul>
+</article>
+{% endblock %}

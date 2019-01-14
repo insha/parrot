@@ -1,0 +1,11 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<article>
+    <h1>About</h1>
+    <p>Parrot was created as a side-project of mine to ease the development of the client that had a web service component that wasn't accessible during development.</p>
+    <p>I am making Parrot available to the public, in hopes that it will help other folks with their projects. While it is doing what I wanted out of it, and it is fairly stable, Parrot is still a <em>work in progress</em>.</p>
+    <p>I do have more features planned for Parrot. I will roll these out when they have reached the <em>good enough</em> state. However, I am more than happy to receive <a href="{{ url_for('bp_web.contact') }}">feedback</a> (questions, comments, feature requests, etc.), if you would care to send it.</p>
+    <p>Being a free service, it does consume resources, including but not limited to, my personal monetary resource that is finite and used for keeping this service online. So please play nice and don't abuse this service. Thank you.</p>
+</article>
+{% endblock %}

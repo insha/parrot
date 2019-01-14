@@ -1,0 +1,13 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<article>
+    <h1>{{heading}}</h1>
+    {% if result %}
+    <p>I have received your feedback.</p>
+    {% else %}
+    <p>We did not receive the message. It is quoted below for your reference:</p>
+    <blockquote>{{message}}</blockquote>
+    {% endif %}
+</article>
+{% endblock %}

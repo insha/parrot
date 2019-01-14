@@ -1,0 +1,16 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<article>
+    <h1>Contact</h1>
+    <p>If you have questions, comments, or just want to say <em>“Hi!”</em> &#x1F609;. I can also be reached on <a href="https://twitter.com/imacronaut">Twitter</a>.</p>
+    <form name="feedback" method="post" action="{{ url_for('bp_web.feedback') }}">
+        <fieldset>
+            <textarea name="message"></textarea>
+        </fieldset>
+        <fieldset>
+            <input type="submit" value="Send">
+        </fieldset>
+    </form>
+</article>
+{% endblock %}

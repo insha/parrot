@@ -1,0 +1,81 @@
+{
+	"name": "The Movie Collective",
+	"base_url": "",
+	"lag": 0,
+	"fuzz": false,
+    "description": "This bundle provides endpoints for a IMDB/TMDB like API.",
+    "endpoints": [
+    	{
+    		"url": "login",
+            "description": "Simulates a user being successfully authenticated by backend.",
+			"responses": {
+                "post": {
+    				"status_code": 200,
+					"lag": 0,
+					"fuzz": true,
+    				"headers":{
+    					"content-type": "application/json"
+    				},
+    				"content": "login.json"
+                }
+			}
+    	},
+    	{
+    		"url": "logout",
+            "description": "User logging out successfully.",
+			"responses": {
+                "delete": {
+    				"status_code": 204,
+    				"headers":{
+    					"content-type": "application/json"
+    				},
+    				"content": null
+                }
+			}
+    	},
+    	{
+    		"url": "profile",
+            "description": "Returns information about the user.",
+			"responses": {
+                "post": {
+    				"status_code": 200,
+    				"headers":{
+    					"content-type": "application/json"
+    				},
+    				"content": "profile.json"
+                }
+			}
+    	},
+        {
+            "url": "movies",
+            "description": "A list of available movies is returned.",
+            "responses": {
+                "get": {
+                    "status_code": 200,
+                    "headers": {
+                        "content-type": "application/json"
+                    },
+                    "content": "movies.json"
+                },
+                "post": {
+                    "status_code": 204,
+                    "headers": {
+                        "content-type": "application/json"
+                    },
+                    "content": null
+                }
+            }
+        },
+        {
+            "url": "movie/346b8ff2-0b1f-11e9-b887-80e6500decc8",
+            "description": "Particular details about a movie.",
+            "responses": {
+                "get": {
+                    "status_code": 200,
+                    "headers": {"content-type": "application/json"},
+                    "content": "detail.json"
+                }
+            }
+        }
+    ]
+}

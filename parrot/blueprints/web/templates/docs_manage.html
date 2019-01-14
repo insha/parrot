@@ -1,0 +1,191 @@
+{% extends 'layouts/base.html' %}
+
+{% block content %}
+<article>
+    <h1>Guide</h1>
+    <p>Some basic interactions with Parrot for creating API endpoints.</p>
+    
+    <h2>Built-in Bundles</h2>
+    <p>Parrot comes with multiple sets of API endpoints that are affectionally called <em>bundles</em>. Each bundle comprises of a set of endpoints and associated response. Following bundles are currently available (Documentation is coming soonish for these):</p>
+    <ul>
+        <li><a href="{{ url_for('bp_web.bundle_doc', bundle_name='movies') }}">Movies</a></li>
+    </ul>
+    
+    <h3>Using a Bundle</h3>
+    <p>In order to activate a bundle, the following request needs to be sent:</p>
+    <h5>cURL</h5>
+    <pre><code>curl -X PUT \
+  https://parrot.themacronaut.com/1/manage/bundle/movies \
+  -H 'cache-control: no-cache'</code></pre>
+    <h5>jQuery</h5>
+    <pre><code>var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://parrot.themacronaut.com/1/manage/bundle/movies",
+  "method": "PUT",
+  "headers": {"cache-control": "no-cache"}
+}
+
+$.ajax(settings).done(function (response) {
+  console.log(response);
+});</code></pre>
+    <h5>Python</h5>
+    <pre><code>import requests
+
+url      = "https://parrot.themacronaut.com/1/manage/bundle/movies"
+payload  = ""
+headers  = {'cache-control': 'no-cache'}
+response = requests.request("PUT", url, data=payload, headers=headers)
+
+print(response.text)</code></pre>
+    <p>This request will result in an HTTP response of <code>204</code> indicating a success. Making all of the endpoints for the <em>Movies</em> bundle available.</p>
+    
+    <h4>Getting Endpoint Information</h4>
+    <p>It is always helpful to know which endpoints are made available by a bundle. In order to get that information a simple <code>OPTIONS</code> request can be sent to Parrot:</p>
+        <h5>cURL</h5>
+        <pre><code>curl -X GET \
+      https://parrot.themacronaut.com/1/manage \
+      -H 'cache-control: no-cache'</code></pre>
+        <h5>jQuery</h5>
+        <pre><code>var settings = {
+  "async": true,
+  "crossDomain": true,
+  "url": "https://parrot.themacronaut.com/1/manage",
+  "method": "GET",
+  "headers": {"cache-control": "no-cache"}
+}
+
+$.ajax(settings).done(function (response) {
+  console.log(response);
+});</code></pre>
+        <h5>Python</h5>
+        <pre><code>import requests
+
+url      = "https://parrot.themacronaut.com/1/manage"
+payload  = ""
+headers  = {'cache-control': 'no-cache'}
+response = requests.request("GET", url, data=payload, headers=headers)
+
+print(response.text)</code></pre>
+    <p>This will yield a response with HTTP status code <code>200</code>, showing all endpoints for the currently selected bundle listed in the <code>endpoints</code> key.</p>
+    <pre><code>{
+    "name": "The Movie Collective",
+    "version": "Parrot 0.42 (1000)",
+    "copyright": "Copyright © 2011-2018 Farhan Ahmed. All rights reserved.",
+    "endpoints": [...],
+    "fuzz": false,
+    "lag": 0
+}</code></pre>
+    <h4>Clearing All Endpoints</h4>
+    <p>In order to clear all endpoints, simply issue a request with the <code>DELETE</code> to the <code>/1/manage</code> endpoint with an empty body.</p>
+    <p>The response will be with the HTTP status code of <code>204</code> if the request is successful.</p>
+    
+    <h2>Managing Endpoints</h2>
+    <p>There are several tools<a href="#tools"><sup>1</sup></a> available that will you interact with Parrot. It is best to use these tools to interact with Parrot when creating your own set of API endpoints.</p>
+    <p>Parrot makes the following endpoints available for creating/modifying API endpoints:</p>
+    <table cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th scope="col">Method</th>
+                <th scope="col">Endpoint</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/1/manage</code></td>
+                <td>This will return a response with a map of all currently configured API endpoints.</td>
+            </tr>
+            <tr>
+                <td><code>POST</code></td>
+                <td><code>/1/manage</code></td>
+                <td>Add a new API endpoint with a response.</td>
+            </tr>
+            <tr>
+                <td><code>PUT</code></td>
+                <td><code>/1/manage</code></td>
+                <td>Update an existing endpoint/response.</td>
+            </tr>
+            <tr>
+                <td><code>DELETE</code></td>
+                <td><code>/1/manage</code></td>
+                <td>This will remove all endpoints and responses. No body is required.</td>
+            </tr>
+            <tr>
+                <td><code>PUT</code></td>
+                <td><code>/1/manage/bundle/<name></code></td>
+                <td>The bundle with the provided name will be loaded, if it exists.</td>
+            </tr>
+            <tr>
+                <td><code>GET</code></td>
+                <td><code>/1/manage/bundle/<name></code></td>
+                <td>Information about the provided bundle name is returned including a map of all endpoints that are available for this bundle.</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <p>The schema that is used for interacting with Parrot is:</p>
+
+    <pre><code>{
+    "endpoint": String,
+    "method": String,
+    "status_code": Integer,
+    "parameters": Object (Used only with 'GET' method),
+    "content": Object (can be null),
+    "lag": Float (defaults to `0`),
+    "fuzz": Boolean (defaults to `false`)
+}</code></pre>
+
+    <table cellspacing="0" cellpadding="0">
+        <thead>
+            <tr>
+                <th scope="col">Key</th>
+                <th scope="col">Description</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td><code>endpoint</code></td>
+                <td>This is the <em>relative</em> URL without the domain name. The endpoint should not start with a slash (<code>/</code>).</td>
+            </tr>
+            <tr>
+                <td><code>method</code></td>
+                <td>The HTTP method for the endpoint.</td>
+            </tr>
+            <tr>
+                <td><code>status_code</code></td>
+                <td>HTTP status code that will be returned for the response.</td>
+            </tr>
+            <tr>
+                <td><code>parameters</code></td>
+                <td>Query string that will be used for matching the endpoint.<br>
+                    NOTE: Both keys and values must be of type <code>string</code>.</td>
+            </tr>
+            <tr>
+                <td><code>content</code></td>
+                <td>Content (dictionary, array, etc.) that will be in body of the response for the endpoint.</td>
+            </tr>
+            <tr>
+                <td><code>lag</code></td>
+                <td>The response will be delayed by the provided value, which is in seconds, defaults to <code>0</code> (no delay).</td>
+            </tr>
+            <tr>
+                <td><code>fuzz</code></td>
+                <td>
+                    When set to <code>true</code>, the content of the response will be randomly generate gibberish.<br>
+                    When <code>true</code> the <code>content</code> value is ignored.
+                </td>
+            </tr>
+        </tbody>
+    </table>
+    <hr>
+    <p id="tools">
+        <sup>1</sup> This is not an endorsement, but a mere sharing of information on some of the tools that are available and can be used to interact with Parrot.
+    </p>
+    <ol type="i">
+        <li><a href="https://www.getpostman.com/">Postman</a> (Available in different flavors)</li>
+        <li><a href="https://paw.cloud/">Paw</a> (macOS only)</li>
+    </ol>
+</article>
+{% endblock %}

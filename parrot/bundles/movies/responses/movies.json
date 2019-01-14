@@ -1,0 +1,89 @@
+[
+    {
+        "id": "334ce18e-0b1f-11e9-bc39-80e6500decc8",
+        "title": "Star Wars: Episode IV - A New Hope",
+        "release_date": "1977-05-12",
+        "cast": {
+            "characters": [
+                {
+                    "Luke Skywalker": "Mark Hamill",
+                    "Han Solo": "Harrison Ford",
+                    "Princess Leia": "Carrie Fisher",
+                    "Darth Vader (voice)": "James Earl Jones",
+                    "Obi-Wan Kenobi": "Alec Guinness",
+                    "C3PO": "Anthony Daniels",
+                    "R2D2": "Kenny Baker",
+                    "Chewbacca": "Peter Mayhew"
+                }
+            ],
+            "directors": ["George Lucas"]
+        },
+        "mpaa_rating": "PG",
+        "running_time": 121,
+        "genres": ["Science Fiction", "Action", "Adventure", "Fantasy"]
+    },
+    {
+        "id": "346b8ff2-0b1f-11e9-b887-80e6500decc8",
+        "title": "The Third Man",
+        "release_date": "1949-10-12",
+        "cast": {
+            "characters": [
+                {
+                    "Holly Martins": "Joseph Cotten",
+                    "Anna Schmidt": "Alida Valli",
+                    "Harry Lime": "Orson Welles",
+                    "Maj. Calloway": "Trevor Howard",
+                    "Sgt. Paine": "Bernard Lee"
+                }
+            ],
+            "directors": ["Carol Reed"]
+        },
+        "mpaa_rating": "NR",
+        "running_time": 93,
+        "genre": ["Film-Noir", "Mystery", "Thriller"]
+    },
+    {
+        "id": "34fcbee6-0b1f-11e9-bdbb-80e6500decc8",
+        "title": "The Hitchhiker's Guide to the Galaxy",
+        "release_date": "2005-04-29",
+        "cast": {
+            "characters": [
+                {
+                    "The Whale (voice)": "Bill Bailey",
+                    "Questular Rontok": "Anna Chancellor",
+                    "Marvin": "Warwick Davis",
+                    "Ford Prefect (as Mos Def)": "Yasiin Bey",
+                    "Trillian": "Zooey Deschanel",
+                    "Pub Customer (as Su Eliott)": "Su Elliot",
+                    "Arthur Dent": "Martin Freeman",
+                    "Narrator / The Guide (voice)": "Stephen Fry"
+                }
+            ],
+            "directors": ["Garth Jennings"]
+        },
+        "mpaa_rating": "PG",
+        "running_time": 109,
+        "genre": ["Adventure", "Comedy", "Science Fiction"]
+    },
+    {
+        "id": "359cc922-0b1f-11e9-9421-80e6500decc8",
+        "title": "The Bourne Identity",
+        "release_date": "2002-06-14",
+        "cast": {
+            "characters": [
+                {
+                    "Bourne": "Matt Damon",
+                    "Marie": "Franka Potente",
+                    "Conklin": "Chris Cooper",
+                    "The Professor": "Clive Owen",
+                    "Ward Abbott": "Brian Cox",
+                    "Wombosi": "Adewale Akinnuoye-Agbaje"
+                }
+            ],
+            "directors": ["Doug Liman"]
+        },
+        "mpaa_rating": "PG-13",
+        "running_time": 119,
+        "genre": ["Action", "Mystery", "Thriller"]
+    }
+]
