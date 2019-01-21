@@ -9,5 +9,5 @@ from parrot.blueprints.api import constants as API
 
 bp_web = Blueprint('bp_web', __name__, url_prefix='', template_folder='templates')
 
-from . import home # noqa
-from . import bundles # noqa
+from . import home  # noqa
+from . import bundles  # noqa
