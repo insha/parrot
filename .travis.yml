@@ -10,3 +10,6 @@ install:
 # command to run tests
 script:
   - pytest --cov-report term-missing --cov=parrot tests/
+
+after-success:
+  - codecov
