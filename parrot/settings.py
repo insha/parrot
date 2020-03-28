@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
 # This file defines default config values and is loaded right before
@@ -13,23 +13,23 @@ import os
 from parrot import __app_info__
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
-BUNDLE_FOLDER = 'bundles'
-RESPONSES_FOLDER = 'responses'
+BUNDLE_FOLDER = "bundles"
+RESPONSES_FOLDER = "responses"
 SITE_ROOT = os.path.realpath(os.path.dirname(__file__))
 CONFIG_PATH = os.path.join(SITE_ROOT, BUNDLE_FOLDER)
-CONFIGURATION_FILE_NAME = 'config.json'
+CONFIGURATION_FILE_NAME = "config.json"
 
 APP_INFO = __app_info__
-ADMINS = ['your_name@example.com']
+ADMINS = ["your_name@example.com"]
 
 ASSETS_FOLDER = None
 USE_PROXY = False
-SECRET_KEY = 'This string will be replaced with a proper key in production.'
+SECRET_KEY = "This string will be replaced with a proper key in production."
 SALT_ACCOUNT_ACTIVATE = (
-    'This string will be replaced with a proper account activation salt in production.'
+    "This string will be replaced with a proper account activation salt in production."
 )
 SALT_INVITE_ACTIVATE = (
-    'This string will be replaced with a proper invite activation salt in production.'
+    "This string will be replaced with a proper invite activation salt in production."
 )
 
 

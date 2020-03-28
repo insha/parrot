@@ -1,23 +1,21 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
-from copy import deepcopy
 from flask import g, session, request, current_app
-
+from parrot.core.response import ParrotResponse
+from parrot.core.service import SERVICES, Service, load_service_config
 from . import constants as API
-from . import bp_api_config
+from . import BP_API_CONFIG
 from .errors import bundle as BUNDLE_ERROR
 from .errors import configuration as CONFIG_ERROR
-from parrot.core.response import ServiceResponse
-from parrot.core.service import services, Service, load_service_config
 
 
-@bp_api_config.route('/', methods=['GET'])
+@BP_API_CONFIG.route("/", methods=["GET"])
 def info():
-    response = ServiceResponse(status_code=API.HTTP_STATUS_CODE_OK)
+    response = ParrotResponse(status_code=API.HTTP_STATUS_CODE_OK)
 
     if not g.service:
         response.error_code = CONFIG_ERROR.NO_SERVICE_AVAILABLE
@@ -29,21 +27,21 @@ def info():
     return response
 
 
-@bp_api_config.route('/', methods=['POST', 'PUT', 'DELETE'])
+@BP_API_CONFIG.route("/", methods=["POST", "PUT", "DELETE"])
 def manage_endpoint():
     response = None
     payload = request.get_json()
-    payload_error = False if not payload and request.method == 'DELETE' else True
+    payload_error = False if not payload and request.method == "DELETE" else True
 
     if payload_error:
-        response = ServiceResponse()
+        response = ParrotResponse()
         response.status_code = API.HTTP_STATUS_CODE_BAD_REQUEST
         response.error_code = CONFIG_ERROR.INVALID_DATA
         response.message = CONFIG_ERROR.MESSAGES[CONFIG_ERROR.INVALID_DATA].format()
     else:
-        if request.method == 'POST':
+        if request.method == "POST":
             response = add_endpoint(payload=payload)
-        elif request.method == 'PUT':
+        elif request.method == "PUT":
             response = update_endpoint(payload=payload)
         else:
             response = reset_service()
@@ -51,21 +49,21 @@ def manage_endpoint():
     return response
 
 
-@bp_api_config.route('/bundle/<bundle_name>', methods=['PUT', 'POST'])
+@BP_API_CONFIG.route("/bundle/<bundle_name>", methods=["PUT", "POST"])
 def load_bundle(bundle_name):
-    response = ServiceResponse(status_code=API.HTTP_STATUS_CODE_NO_CONTENT)
+    response = ParrotResponse(status_code=API.HTTP_STATUS_CODE_NO_CONTENT)
 
     if bundle_name:
-        if request.method == 'POST':
+        if request.method == "POST":
             service = Service()
-            g.service = services.add(service)
+            g.service = SERVICES.add(service)
         else:
             if g.service:
                 g.service.load_bundle(name=bundle_name)
             else:
                 service = Service()
                 service.load_bundle(name=bundle_name)
-                g.service = services.add(service)
+                g.service = SERVICES.add(service)
 
         if g.service is None:
             response.error_code = BUNDLE_ERROR.NOT_FOUND
@@ -83,9 +81,9 @@ def load_bundle(bundle_name):
     return response
 
 
-@bp_api_config.route('/bundle/<bundle_name>', methods=['GET'])
+@BP_API_CONFIG.route("/bundle/<bundle_name>", methods=["GET"])
 def bundle_information(bundle_name):
-    response = ServiceResponse(status_code=API.HTTP_STATUS_CODE_OK)
+    response = ParrotResponse(status_code=API.HTTP_STATUS_CODE_OK)
 
     if bundle_name:
         service = load_service_config(current_app, bundle_name=bundle_name)
@@ -100,7 +98,7 @@ def bundle_information(bundle_name):
 
 def update_endpoint(payload=None):
     did_update, reason = g.service.update(payload=payload)
-    response = ServiceResponse()
+    response = ParrotResponse()
     response.headers = API.DEFAULT_HEADER
     response.status_code = (
         API.HTTP_STATUS_CODE_NO_CONTENT if did_update else API.HTTP_STATUS_CODE_OK
@@ -117,7 +115,7 @@ def update_endpoint(payload=None):
 
 def add_endpoint(payload=None):
     did_add, reason = g.service.add_endpoint(payload=payload)
-    response = ServiceResponse()
+    response = ParrotResponse()
     response.headers = API.DEFAULT_HEADER
     response.status_code = (
         API.HTTP_STATUS_CODE_NO_CONTENT if did_add else API.HTTP_STATUS_CODE_OK
@@ -132,7 +130,7 @@ def add_endpoint(payload=None):
 
 def reset_service():
     did_reset = g.service.reset()
-    response = ServiceResponse()
+    response = ParrotResponse()
     response.headers = API.DEFAULT_HEADER
     response.status_code = (
         API.HTTP_STATUS_CODE_NO_CONTENT

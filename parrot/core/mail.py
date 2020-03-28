@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
 from flask_mail import Mail
 
-mail = Mail()
+MAIL = Mail()

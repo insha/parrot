@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
 """
@@ -11,16 +11,16 @@ Adapted from: https://github.com/crgwbr/flask_cors
 Usage:
     from flask import Flask
     import re
-    from parrot.cors import CrossOriginResourceSharing
-    
+    from errands.cors import CrossOriginResourceSharing
+
     app = Flask()
-    
+
     # Allowed Origins
     allowed = (
         'http://localhost:9294', # Exact String Compare
         re.compile("^http([s]*):\/\/example.com([\:\d]*)$"), # Match a regex
     )
-    
+
     # Add Access Control Header
     cors = CrossOriginResourceSharing(app)
     cors.set_allowed_origins(*allowed)
@@ -38,10 +38,10 @@ import re
 from flask import request
 
 
-class CrossOriginResourceSharing(object):
+class CrossOriginResourceSharing:
     app = None
     allow_credentials = True
-    allowed_origins = ""
+    allowed_origins = []
     max_age = 1728000
     methods = "GET,POST,PUT,DELETE,OPTIONS"
 
@@ -58,19 +58,19 @@ class CrossOriginResourceSharing(object):
         self.allowed_origins.append(pattern)
 
     def allow_origin(self, response, origin):
-        headers = request.headers.get('Access-Control-Request-Headers', "")
+        headers = request.headers.get("Access-Control-Request-Headers", "")
 
-        response.headers['Access-Control-Allow-Headers'] = headers
-        response.headers['Access-Control-Allow-Origin'] = origin
-        response.headers['Access-Control-Allow-Credentials'] = self.allow_credentials
-        response.headers['Access-Control-Allow-Methods'] = self.methods
-        response.headers['Access-Control-Max-Age'] = self.max_age
+        response.headers["Access-Control-Allow-Headers"] = headers
+        response.headers["Access-Control-Allow-Origin"] = origin
+        response.headers["Access-Control-Allow-Credentials"] = self.allow_credentials
+        response.headers["Access-Control-Allow-Methods"] = self.methods
+        response.headers["Access-Control-Max-Age"] = self.max_age
 
         return response
 
     @classmethod
-    def check_origin(self, pattern):
-        origin = request.headers.get('Origin', '')
+    def check_origin(cls, pattern):
+        origin = request.headers.get("Origin", "")
         allowed = False
         if isinstance(pattern, str):
             if origin == pattern:
@@ -94,10 +94,10 @@ class CrossOriginResourceSharing(object):
         self.allow_credentials = allowed
 
     def set_allowed_methods(self, *args):
-        self.methods = ','.join(args)
+        self.methods = ",".join(args)
 
-    def set_allowed_origins(self, *args):
-        self.allowed_origins = args
+    def set_allowed_origins(self, origin):
+        self.allowed_origins = origin
 
     def set_max_age(self, max_age):
         self.max_age = max_age

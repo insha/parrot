@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
 from flask import jsonify
@@ -26,9 +26,9 @@ class ParrotError(Exception):
         self.payload = payload
 
     def to_dict(self):
-        rv = dict(self.payload or ())
-        rv['message'] = self.message
-        return rv
+        result = dict(self.payload or ())
+        result["message"] = self.message
+        return result
 
 
 ##################
@@ -43,12 +43,12 @@ def on_parrot_error(error):
     return response
 
 
-def on_404(e):
-    return jsonify(dict(error='Not found')), API.HTTP_STATUS_CODE_NOT_FOUND
+def on_404(_):
+    return jsonify(dict(error="Not found")), API.HTTP_STATUS_CODE_NOT_FOUND
 
 
-def on_500(e):
+def on_500(_):
     return (
-        jsonify(dict(error='Server error')),
+        jsonify(dict(error="Server error")),
         API.HTTP_STATUS_CODE_INTERNAL_SERVER_ERROR,
     )

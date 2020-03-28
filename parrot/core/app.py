@@ -1,26 +1,36 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
-import datetime
 import logging
 import logging.config
 import os
 import sys
 import yaml
-import re
 
-from copy import deepcopy
 from flask import Flask, g, session, current_app
 
+from parrot.blueprints.api import constants as API
+from parrot.blueprints.api import BP_API
+from parrot.blueprints.api import BP_API_CONFIG
+from parrot.blueprints.web import BP_WEB
 from .cors import CrossOriginResourceSharing
 from .exceptions import ParrotError, on_parrot_error, on_404, on_500
-from .response import APIEnpointResponse
-from .service import services, load_service_config
-from .mail import mail
-from parrot.blueprints.api import constants as API
+from .response import ParrotResponse
+from .service import SERVICES
+from .mail import MAIL
+
+
+class ParrotFlask(Flask):
+    def make_response(self, rv):
+        return_value = rv
+
+        if isinstance(return_value, ParrotResponse):
+            return_value = return_value.generate_response()
+
+        return super(ParrotFlask, self).make_response(return_value)
 
 
 def create_app(config_file=None):
@@ -32,7 +42,7 @@ def create_app(config_file=None):
                         If set, the environment variable is ignored
     :return: A `Flask` application instance
     """
-    app = Flask('parrot')
+    app = ParrotFlask("parrot")
 
     _setup_logger(app)
     _load_config(app, config_file)
@@ -46,51 +56,48 @@ def create_app(config_file=None):
 
 def _setup_logger(app):
     # Create our customized logger.
-    app._logger = logging.getLogger(app.logger.name)
+    app.logger = logging.getLogger(app.logger.name)
 
     try:
-        path = os.environ['PARROT_LOGGING_CONFIG']
+        path = os.environ["PARROT_LOGGING_CONFIG"]
     except KeyError:
-        path = os.path.join(app.root_path, 'logging.yaml')
+        path = os.path.join(app.root_path, "logging.yaml")
 
-    with open(path) as f:
-        logging.config.dictConfig(yaml.load(f))
+    with open(path) as config_file:
+        logging.config.dictConfig(yaml.load(config_file))
 
 
 def _load_config(app, config_file):
-    app.config.from_pyfile('settings.py')
+    app.config.from_pyfile("settings.py")
 
     if config_file:
         app.config.from_pyfile(config_file)
     else:
-        app.config.from_envvar('PARROT_CONFIG', silent=True)
+        app.config.from_envvar("PARROT_CONFIG", silent=True)
 
-    if not app.config['ASSETS_FOLDER']:
-        app.config['ASSETS_FOLDER'] = os.path.join(app.root_path, 'static', 'assets')
-
-    if app.config['USE_PROXY']:
-        app.wsgi_app = ProxyFix(app.wsgi_app)
+    if not app.config["ASSETS_FOLDER"]:
+        app.config["ASSETS_FOLDER"] = os.path.join(app.root_path, "static", "assets")
 
 
 def _setup_keys(app):
     """Configure the SECRET_KEY from a file in the instance directory.
-    If the file does not exist, print instructions to create it from a 
+    If the file does not exist, print instructions to create it from a
     shell with a random key, then exit.
     """
-    if app.config['PRODUCTION']:
-        filename = os.path.join(app.instance_path, 'secret_key')
+    if app.config["PRODUCTION"]:
+        filename = os.path.join(app.instance_path, "secret_key")
 
         try:
-            app.config['SECRET_KEY'] = open(filename, 'rb').read()
+            app.config["SECRET_KEY"] = open(filename, "rb").read()
         except IOError:
-            print('Error: No secret key. Create it with:')
+            print("Error: No secret key. Create it with:")
 
             full_path = os.path.dirname(filename)
 
             if not os.path.isdir(full_path):
-                print('mkdir -p {path}'.format(path=full_path))
+                print("mkdir -p {path}".format(path=full_path))
 
-            print('head -c 24 /dev/urandom > {filename}'.format(filename=filename))
+            print("head -c 24 /dev/urandom > {filename}".format(filename=filename))
 
             sys.exit(1)
     else:
@@ -99,22 +106,19 @@ def _setup_keys(app):
 
 
 def _setup_extensions(app):
-    mail.init_app(app)
+    MAIL.init_app(app)
 
 
 def _register_handlers(app):
-    # Custom Response for the API
-    app.response_class = APIEnpointResponse
-
     # Register custom error handlers
     app.errorhandler(ParrotError)(on_parrot_error)
     app.errorhandler(404)(on_404)
     app.errorhandler(500)(on_500)
 
-    if app.config.get('CORS_ENABLED', False):
+    if app.config.get("CORS_ENABLED", False):
         # Add Access Control Header
         cors = CrossOriginResourceSharing(app)
-        allowed = app.config.get('CORS_ALLOWED_ORIGINS', None)
+        allowed = app.config.get("CORS_ALLOWED_ORIGINS", None)
 
         cors.set_allowed_origins(*allowed)
     else:
@@ -125,24 +129,20 @@ def _register_handlers(app):
     @app.before_request
     def before_request():
         g.service = None
-        g.app_info = current_app.config['APP_INFO']
+        g.app_info = current_app.config["APP_INFO"]
 
         if API.SESSION_USER_AUTHENTICATION_TOKEN_KEY in session:
-            g.service = services.find(
+            g.service = SERVICES.find(
                 identifier=session[API.SESSION_USER_AUTHENTICATION_TOKEN_KEY]
             )
 
     @app.teardown_request
-    def teardown_request(exception):
+    def teardown_request(_):
         g.service = None
         g.app_info = None
 
 
 def _register_blueprints(app):
-    from parrot.blueprints.api import bp_api
-    from parrot.blueprints.api import bp_api_config
-    from parrot.blueprints.web import bp_web
-
-    app.register_blueprint(bp_api_config)
-    app.register_blueprint(bp_api)
-    app.register_blueprint(bp_web)
+    app.register_blueprint(BP_API_CONFIG)
+    app.register_blueprint(BP_API)
+    app.register_blueprint(BP_WEB)

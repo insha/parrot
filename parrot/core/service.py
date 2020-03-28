@@ -1,44 +1,44 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
 import os
 import uuid
 
+from json import JSONDecodeError
 from flask import current_app, json
-
 from parrot.core.endpoint import ServiceEndpoint
-from parrot.core.response import ServiceResponse
+from parrot.core.response import ParrotResponse
 from parrot.blueprints.api import constants as API
 
 
-class Service(object):
+class Service:
     name = None
     base_url = None
     lag = 0
     fuzz = False
-    # Dictionary with `key` == the api endpoint (url) and the value is an instance of ServiceEndpoint
+    # Dictionary where the `key` is the api endpoint (url) and the value is an instance of ServiceEndpoint
     endpoints = {}
-    description = ''
+    description = ""
     identifier = None
 
     def __init__(self, **kwargs):
         super(Service, self).__init__(**kwargs)
 
-        self.name = kwargs.get('name', API.DEFAULT_SERVICE_NAME)
-        self.base_url = kwargs.get('base_url', None)
-        self.endpoints = kwargs.get('endpoints', {})
-        self.description = kwargs.get('description', '')
-        self.identifier = kwargs.get('identifier', str(uuid.uuid1()))
+        self.name = kwargs.get("name", API.DEFAULT_SERVICE_NAME)
+        self.base_url = kwargs.get("base_url", None)
+        self.endpoints = kwargs.get("endpoints", {})
+        self.description = kwargs.get("description", "")
+        self.identifier = kwargs.get("identifier", str(uuid.uuid1()))
 
     def __repr__(self):
-        return f'<Service {hex(id(self))}> {self.name} {self.identifier}'
+        return f"<Service {hex(id(self))}> {self.name} {self.identifier}"
 
     def load_bundle(self, name=None):
         """Loads a bundle with the provided `name` from the file system.
-        
+
         :param name: Name of the bundle.
         """
         if name:
@@ -55,11 +55,11 @@ class Service(object):
 
     def find(self, method=None, endpoint=None, parameters=None):
         """Lookup the endpoint with the provided information.
-        
+
         :param method:     The HTTP method for an endpoint.
         :param endpoint:   The path of the endpoint.
         :param parameters: The query parameters for an endpoint, if any.
-        
+
         :returns: An instance of the :class:`ServiceResponse`. The `error_code`
                   will be set when an endpoint is not found.
         """
@@ -67,12 +67,14 @@ class Service(object):
 
         try:
             api_endpoint = self._find_endpoint(key=endpoint, parameters=parameters)
-            response = api_endpoint.responses[method.upper()]
-        except:
-            message = f'Could not find a matching endpoint: ({method}) {endpoint} {parameters}'
-            response = ServiceResponse()
+
+            if api_endpoint:
+                response = api_endpoint.responses[method.upper()]
+        except KeyError as _:
+            message = f"Could not find a matching endpoint: ({method}) {endpoint} {parameters}"
+            response = ParrotResponse()
             response.status_code = API.HTTP_STATUS_CODE_NOT_FOUND
-            response.headers = {'content-type': 'application/json'}
+            response.headers = {"content-type": "application/json"}
             response.message = message
             response.error_code = -20001
 
@@ -81,10 +83,10 @@ class Service(object):
     def _find_endpoint(self, key=None, parameters=None):
         """This is a private method that is invoked by the public
         `find` method of :class:`Service`.
-        
+
         :param key:        The path of an endpoint.
         :param parameters: The query parameters for an endpoint, if any.
-        
+
         :returns: An instance of the :class:`ServiceEndpoint` when successful.
                   None when an endpoint could not be matched.
         """
@@ -100,14 +102,14 @@ class Service(object):
 
                 if not did_match_parameters:
                     api_endpoint = None
-        except:
+        except KeyError as _:
             pass
 
         return api_endpoint
 
     def update(self, payload=None):
         """This is used for updating an already existing endpoint.
-        
+
         :param payload: A dict with information about the endpoint that is being updated.
         """
         did_update = False
@@ -131,36 +133,15 @@ class Service(object):
 
         return (did_update, message)
 
-    def add_endpoint(self, payload=None):
+    def add_endpoint(self, endpoint):
         """Adds an endpoint to a service.
-        
+
         :param payload: A dict containing information for the endpoint that will be added.
         """
         did_add = False
         message = None
-        method = payload.get(API.RESPONSE_PAYLOAD_METHOD_KEY, None)
-        endpoint_url = payload.get(API.RESPONSE_PAYLOAD_ENDPOINT_KEY, None)
-        parameters = payload.get(API.RESPONSE_PAYLOAD_PARAMETERS_KEY, None)
-        description = payload.get(API.CONFIGURATION_DESCRIPTION_KEY, '')
-        service_endpoint = self.find(
-            method=method, endpoint=endpoint_url, parameters=parameters
-        )
 
-        if service_endpoint.error_code != 0:
-            if endpoint_url in self.endpoints:
-                self.endpoints[endpoint_url].add_response(payload=payload)
-            else:
-                service_endpoint = ServiceEndpoint(
-                    url=endpoint_url, parameters=parameters, description=description
-                )
-                self.endpoints[service_endpoint.url] = service_endpoint
-                self.endpoints[service_endpoint.url].add_response(payload=payload)
-
-            did_add = True
-        else:
-            message = (
-                f'The endpoint already exists: ({method}) {endpoint_url} {parameters}'
-            )
+        self.endpoints[endpoint.url] = endpoint
 
         return (did_add, message)
 
@@ -179,8 +160,8 @@ class Service(object):
                 endpoint.responses.pop(method)
 
             did_remove = True
-        except:
-            messgae = f'Could not remove endpoint `{endpoint}`'
+        except KeyError as _:
+            message = f"Could not remove endpoint `{endpoint}`"
 
         return (did_remove, message)
 
@@ -188,7 +169,7 @@ class Service(object):
         """This will remove all endpoints and all configuration
         for a service; essentially a 'reset to factory setting'
         method.
-        
+
         NOTE: This will always return `True`.
         """
         self.name = API.DEFAULT_SERVICE_NAME
@@ -201,14 +182,14 @@ class Service(object):
 
     def info(self, app_info=None):
         """Generates information about all of the endpoints for a service.
-        
+
         :param app_info: version and copyright information about the app.
         """
         payload = {
-            'name': self.name,
-            'lag': self.lag,
-            'fuzz': self.fuzz,
-            'description': self.description,
+            "name": self.name,
+            "lag": self.lag,
+            "fuzz": self.fuzz,
+            "description": self.description,
         }
         service_endpoints = []
 
@@ -241,13 +222,13 @@ class Service(object):
 
         if app_info:
             payload[
-                'version'
-            ] = f'{app_info.name} {app_info.version} ({app_info.build})'
-            payload['copyright'] = f'{app_info.copyright}'
+                "version"
+            ] = f"{app_info.name} {app_info.version} ({app_info.build})"
+            payload["copyright"] = f"{app_info.copyright}"
 
         payload[API.CONFIGURATION_IDENTIFIER_KEY] = self.identifier
 
-        info_response = ServiceResponse()
+        info_response = ParrotResponse()
         info_response.content = payload
 
         return info_response
@@ -257,16 +238,16 @@ def load_service_config(app=None, bundle_name=None):
     """This method will load a configuration from the file system, and then
     parse the information and create a instance of the :class:`Service`
     from the parsed information.
-    
+
     :param app:         The current Flask app that is running.
     :param bundle_name: Name of the bundle that will be loaded.
     """
     service = None
     json_path = None
     config = bundle_name
-    config_filename = app.config.get('CONFIGURATION_FILE_NAME', None)
-    config_path = app.config.get('CONFIG_PATH', None)
-    responses_folder = app.config.get('RESPONSES_FOLDER', None)
+    config_filename = app.config.get("CONFIGURATION_FILE_NAME", None)
+    config_path = app.config.get("CONFIG_PATH", None)
+    responses_folder = app.config.get("RESPONSES_FOLDER", None)
 
     if config:
         with app.app_context():
@@ -280,8 +261,19 @@ def load_service_config(app=None, bundle_name=None):
                     config_path=config_path,
                     responses_folder=responses_folder,
                 )
-            except Exception as e:
-                error_message = f'Could not load the configuration for `{config}`. ({json_path})\n{e}'
+            except JSONDecodeError as invalid_json_error:
+                error_message = (
+                    f"Provided JSON is invalid.\n"
+                    f"---------------------------"
+                    f"{invalid_json_error.msg}"
+                    f"---------------------------"
+                    f"Document: {invalid_json_error.doc}"
+                    f"Position: {invalid_json_error.pos}"
+                    f"Line    : {invalid_json_error.lineno}"
+                )
+                current_app.logger.error(error_message)
+            except OSError as error:
+                error_message = f"Could not load the configuration for `{config}`. ({json_path})\n{error}"
                 current_app.logger.info(error_message)
     else:
         service = Service()
@@ -292,7 +284,7 @@ def load_service_config(app=None, bundle_name=None):
 
 def _parse_bundle(config=None, data=None, config_path=None, responses_folder=None):
     """This is a private(internal) method for parsing a bundle that read from the file system.
-    
+
     :param config:           The application configuration for bundle location.
     :param data:             The data that has been loaded and parsed as JSON for the bundle.
     :param config_path:      The path to the bundle configuration file.
@@ -301,7 +293,7 @@ def _parse_bundle(config=None, data=None, config_path=None, responses_folder=Non
     service = Service()
     service.name = data.get(API.CONFIGURATION_NAME_KEY)
     service.base_url = data.get(API.CONFIGURATION_BASE_URL_KEY, None)
-    service.description = data.get(API.CONFIGURATION_DESCRIPTION_KEY, '')
+    service.description = data.get(API.CONFIGURATION_DESCRIPTION_KEY, "")
     endpoint_configs = data.get(API.CONFIGURATION_ENDPOINTS_KEY, [])
 
     if len(endpoint_configs) == 0:
@@ -309,14 +301,18 @@ def _parse_bundle(config=None, data=None, config_path=None, responses_folder=Non
             "{name} does not have any endpoints.".format(name=service.name)
         )
     else:
+        endpoint = ServiceEndpoint()
+
         for endpoint_config in endpoint_configs:
-            endpoint_url = endpoint_config.get(API.CONFIGURATION_URL_KEY)
-            endpoint_parameters = endpoint_config.get(
+            endpoint.description = endpoint_config.get(
+                API.CONFIGURATION_DESCRIPTION_KEY, ""
+            )
+            endpoint.url = endpoint_config.get(API.CONFIGURATION_URL_KEY)
+            endpoint.parameters = endpoint_config.get(
                 API.RESPONSE_PAYLOAD_PARAMETERS_KEY, None
             )
-            endpoint_responses = endpoint_config.get(API.CONFIGURATION_RESPONSES_KEY)
-            endpoint_description = endpoint_config.get(
-                API.CONFIGURATION_DESCRIPTION_KEY, ''
+            endpoint_responses = endpoint_config.get(
+                API.CONFIGURATION_RESPONSES_KEY, {}
             )
 
             for method, content in endpoint_responses.items():
@@ -329,7 +325,7 @@ def _parse_bundle(config=None, data=None, config_path=None, responses_folder=Non
                         content_file is None or len(content_file) == 0
                     ):
                         raise ValueError(
-                            'The value of the `content` node is invalid for `status_code` of `%d`'
+                            "The value of the `content` node is invalid for `status_code` of `%d`"
                             % status_code
                         )
 
@@ -344,9 +340,6 @@ def _parse_bundle(config=None, data=None, config_path=None, responses_folder=Non
                         response_body = data
 
                     payload = {
-                        API.RESPONSE_PAYLOAD_ENDPOINT_KEY: endpoint_url,
-                        API.CONFIGURATION_DESCRIPTION_KEY: endpoint_description,
-                        API.RESPONSE_PAYLOAD_PARAMETERS_KEY: endpoint_parameters,
                         API.RESPONSE_PAYLOAD_METHOD_KEY: method.upper(),
                         API.RESPONSE_PAYLOAD_STATUS_CODE_KEY: status_code,
                         API.RESPONSE_PAYLOAD_HEADERS_KEY: content.get(
@@ -361,16 +354,21 @@ def _parse_bundle(config=None, data=None, config_path=None, responses_folder=Non
                         ),
                     }
 
-                    service.add_endpoint(payload=payload)
-                except Exception as e:
-                    error_message = f'Could not load the response for endpoint `{endpoint_url}` from file `{content_file}`. {e}'
+                    endpoint.add_response(payload=payload)
+                except ValueError as error:
+                    error_message = (
+                        f"Could not load the response for endpoint `{endpoint.url}`"
+                        f" from file `{content_file}`. {error}"
+                    )
                     current_app.logger.info(error_message)
+
+            service.add_endpoint(endpoint=endpoint)
 
     return service
 
 
-class Services(object):
-    def __init__(self, service=None):
+class Services:
+    def __init__(self):
         self._items = {}
 
     def find(self, identifier):
@@ -378,7 +376,7 @@ class Services(object):
 
         try:
             service = self._items[identifier]
-        except:
+        except KeyError as _:
             pass
 
         return service
@@ -397,4 +395,4 @@ class Services(object):
         self._items = {}
 
 
-services = Services()
+SERVICES = Services()

@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
 """
-    :copyright: © 2010-2019 by Farhan Ahmed.
-    :license: BSD, see LICENSE for more details.
+    :copyright: © 2010-2020 by Farhan Ahmed.
+    :license: See LICENSE for more details.
 """
 
 import uuid
 
 from flask import current_app
-
-from .response import ServiceResponse
 from parrot.blueprints.api import constants as API
+from .response import ParrotResponse
 
 
-class ServiceEndpoint(object):
+class ServiceEndpoint:
     url = None
     parameters = None
     responses = {}
     identifier = None
-    description = ''
+    description = ""
 
-    def __init__(self, url=None, parameters=None, description='', responses=[]):
-        identifier = str(uuid.uuid1())
+    def __init__(self, url=None, parameters=None, description="", responses=[]):
+        self.identifier = str(uuid.uuid1())
 
         if url:
             self.url = url
@@ -32,7 +31,7 @@ class ServiceEndpoint(object):
                 self.responses[response.method] = response
 
     def __repr__(self):
-        return '<ServiceEndpoint {memory}> {endpoint}'.format(
+        return "<ServiceEndpoint {memory}> {endpoint}".format(
             memory=hex(id(self)), endpoint=self.url
         )
 
@@ -42,9 +41,9 @@ class ServiceEndpoint(object):
         try:
             if self.url == url:
                 service_response = self.responses[method.upper()]
-        except:
+        except ValueError as _:
             current_app.logger.info(
-                'Could not find the response for {method}/{url}'.format(
+                "Could not find the response for {method}/{url}".format(
                     method=method, url=url
                 )
             )
@@ -61,7 +60,7 @@ class ServiceEndpoint(object):
         lag = payload.get(API.RESPONSE_PAYLOAD_LAG_KEY, 0)
         fuzz = payload.get(API.RESPONSE_PAYLOAD_FUZZ_KEY, False)
 
-        service_response = ServiceResponse(
+        service_response = ParrotResponse(
             status_code=status_code, method=method, headers=headers, content=content
         )
         service_response.lag = lag
