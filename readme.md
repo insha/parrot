@@ -4,7 +4,7 @@
 
 The server is geared towards mocking up APIs for general development, unit tests, UI testing and automation tests.
 
-[![pipeline status](https://gitlab.com/insha/parrot/badges/master/pipeline.svg)](https://gitlab.com/insha/parrot/commits/master) [![coverage report](https://gitlab.com/insha/parrot/badges/master/coverage.svg)](https://gitlab.com/insha/parrot/commits/master) [![codebeat badge](https://codebeat.co/badges/10f63c69-3c24-4e84-9efe-c8e54d52516a)](https://codebeat.co/projects/github-com-insha-parrot-master)
+[![Build Status](https://travis-ci.org/insha/parrot.svg?branch=master)](https://travis-ci.org/insha/parrot)[![codecov](https://codecov.io/gh/insha/parrot/branch/master/graph/badge.svg)](https://codecov.io/gh/insha/parrot)[![codebeat badge](https://codebeat.co/badges/10f63c69-3c24-4e84-9efe-c8e54d52516a)](https://codebeat.co/projects/github-com-insha-parrot-master)
 
 ### Supported Features
 
