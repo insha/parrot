@@ -6,6 +6,7 @@ install:
   - export FLASK_APP=parrot._cli_app
   - export FLASK_ENV=development
   - pip install -r requirements/dev.txt
+  - pip install codecov
   - flask --version
 # command to run tests
 script:
