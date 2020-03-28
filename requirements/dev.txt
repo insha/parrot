@@ -3,3 +3,10 @@
 # Testing Tools
 pytest==4.0.2
 pytest-cov==2.6.0
+
+# Code Style
+black==19.10b0
+
+# Linter
+pylint==2.4.4
+pylint-flask==0.6

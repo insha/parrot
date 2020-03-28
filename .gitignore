@@ -6,6 +6,7 @@ __pycache__/
 
 # mypy
 .mypy_cache
+.vscode
 
 # C extensions
 *.so
